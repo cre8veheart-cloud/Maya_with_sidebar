@@ -102,3 +102,76 @@ test("only exact founder approval comments satisfy the head SHA check", () => {
     false,
   );
 });
+
+test("the named founder can approve as a collaborator in the recovered repository", () => {
+  assert.equal(
+    hasExactFounderApproval(
+      [{
+        user: { login: FOUNDER_LOGIN },
+        author_association: "COLLABORATOR",
+        body: "APPROVE abc123",
+      }],
+      FOUNDER_LOGIN,
+      "abc123",
+    ),
+    true,
+  );
+});
+
+test("founder recognition does not allow other accounts or untrusted associations", () => {
+  for (const login of [
+    "cre8veheart-cloud",
+    "cre8veheart-ai.",
+    "claude[bot]",
+    "untrusted-user",
+  ]) {
+    for (const association of ["OWNER", "COLLABORATOR"]) {
+      assert.equal(
+        hasExactFounderApproval(
+          [{
+            user: { login },
+            author_association: association,
+            body: "APPROVE abc123",
+          }],
+          FOUNDER_LOGIN,
+          "abc123",
+        ),
+        false,
+        `${login}: ${association}`,
+      );
+    }
+  }
+  for (const association of ["NONE", "CONTRIBUTOR", "MEMBER", undefined]) {
+    assert.equal(
+      hasExactFounderApproval(
+        [{
+          user: { login: FOUNDER_LOGIN },
+          author_association: association,
+          body: "APPROVE abc123",
+        }],
+        FOUNDER_LOGIN,
+        "abc123",
+      ),
+      false,
+      String(association),
+    );
+  }
+});
+
+test("a founder collaborator still needs the exact current head", () => {
+  for (const body of ["APPROVE stale-head", "APPROVE", "please APPROVE abc123"]) {
+    assert.equal(
+      hasExactFounderApproval(
+        [{
+          user: { login: FOUNDER_LOGIN },
+          author_association: "COLLABORATOR",
+          body,
+        }],
+        FOUNDER_LOGIN,
+        "abc123",
+      ),
+      false,
+      body,
+    );
+  }
+});
