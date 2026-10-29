@@ -102,11 +102,21 @@ Initial candidate categories (providers intentionally undecided):
 
 ## Current Working Checkpoint
 
-Last updated: 2026-09-21 UTC
-Update authority: Founder-approved working state
+Last updated: 2026-10-29 UTC
+Update authority: Founder-approved targeted account/workflow access repair; no production approval
 Resume phrase: **DIH EVENT MAYA**
 
-### Active engineering-control checkpoint
+### Current account/workflow access checkpoint
+
+- Governing sections: Blueprint governance, Preapproved Tool Register, Amendment protocol and Work History Trail. Founder approved inviting `cre8veheart-ai` with write access and allowing that account plus current owner `cre8veheart-cloud` to request Claude work; no broad bot access or production-gate bypass.
+- VERIFIED: GitHub login is `cre8veheart-ai` (no dot). `Cre8veheart-ai.` is the configured Git commit-author name, not an alternate account handle. Current accessible repository owner is `cre8veheart-cloud`; `cre8veheart-ai` has read access.
+- VERIFIED blocker: collaborator invitation returned HTTP422 `Validation Failed`, resource error `User has blocked you`. No invitation created and no permission change verified. Both connected GitHub identities authenticate as `cre8veheart-cloud`; neither can read the account block list with current permissions (404; CLI reports missing user scope). Do not treat a successful sign-in as an unblock.
+- VERIFIED: account-wide interaction limit is `collaborators_only`; existing Claude workflow allows only `cre8veheart-ai`, explaining skipped owner-request runs. This branch adds only `cre8veheart-cloud` to that job's actor condition and tests both approved accounts, explicit mention requirement, denial of unrelated users/bots, and separate read-only manual smoke test.
+- UNCHANGED: production approval workflow/helper, AI/provider configuration, secrets, installed apps, other collaborators, account moderation settings, main and live deployments. Existing exact-head approval helper also requires author association OWNER while naming `cre8veheart-ai`; account identity/ownership reconciliation remains separate from this Claude request fix.
+- VERIFIED locally: actor-condition tests and unchanged founder-approval tests pass; actionlint passes; clean `npm ci` and full `npm run verify` pass, including all 15 unit tests and Next.js production build. This branch retains the recovery dependency lockfile, whose install reports six existing vulnerabilities; dependency remediation is separate Cloudflare PR #2, not silently included here.
+- First next action: publish `fix/claude-owner-access` against the unchanged recovery branch and observe CI. Founder must remove the relevant block from the blocking GitHub account before the collaborator invitation can succeed; do not repeat it without changed account state. Workflow activation requires approved integration into the default branch.
+
+### Archived September checkpoint (not reverified in recovery)
 
 - PR #135 (approval-gate false-failure fix) is VERIFIED merged to `main` (commit `95fb9c5`); the `issue_comment`-from-bots false-failure is resolved in production.
 - PR #134 (founder-continuity removal + chat provider error hardening) is VERIFIED merged to `main` (commit `29eaf68`) and VERIFIED live in production on both the canonical `maya-with-sidebar` and legacy `maya-claude-mcp` Vercel projects.
@@ -136,6 +146,22 @@ When **DIH EVENT MAYA** is invoked:
 - A work session is not considered closed until the checkpoint states the verified stop point and first next action.
 
 ## Work History Trail
+
+### 2026-10-29 — Founder-approved targeted access repair
+
+- Task and approval: Founder requested unblocking AI/owner workflows and selected both targeted fixes: invite `cre8veheart-ai` as a write collaborator and permit both named owner/founder accounts in the Claude request workflow. Preserve account-wide restriction and production-approval gate unless separately changed by Founder.
+- Sections preserved: Blueprint governance, Preapproved Tool Register, Amendment protocol; no product, authentication, data-boundary, provider or production authority change.
+- Live evidence: owner `cre8veheart-cloud`; `cre8veheart-ai` permission `read`; account-wide moderation `collaborators_only`; Actions enabled with read-only default token permissions; Claude requests from current owner skipped by the single-actor condition.
+- Invitation attempt: GitHub App PUT collaborator endpoint returned HTTP422 with `User has blocked you`. No invitation or grant was confirmed. App and personal-token block-list reads returned 404; CLI identified missing user scope. No reconnect, token extraction, broad permission grant or repeated write attempted.
+- Naming check: public API resolves `cre8veheart-ai` without a dot; Git author is `Cre8veheart-ai.`. Retain the verified API login in authorization checks. Do not infer that Claude created the account moderation/block settings.
+- Change: add current repository owner to the Claude job actor allowlist; no unrestricted actors, write-token permission expansion, event changes, manual-smoke changes, or production-gate edits. Add executable regression tests against the workflow's actual condition.
+- Source provenance: branch `fix/claude-owner-access` is separate from Cloudflare PR #2 and based on recovery PR #1 (`87ef34382f7934a6ca05c59968e7cfd4a7e55695`). Keep the exact archive recovery unchanged.
+- Verification gate: actionlint, new actor-condition regression tests, `npm ci` and full `npm run verify`; remote CI observed after publication. No provider calls, workflow dispatch, issue comments or production actions authorized by this patch.
+- Rollback: close the unmerged access-fix PR, or revert its single actor-condition change and tests after a separately approved merge. Account unblocking must be completed by the account controlling the block before retrying the invitation.
+- Post-fix verification: clean `npm ci` and full `npm run verify` exit 0 (15 unit tests, credential audit, role/security/persistence scripts and Next build). Both accounts pass the actual Claude job condition for four supported event types; unrelated actors, bots, dot-suffixed author name, missing mention, and manual-dispatch crossover fail closed. Unchanged founder-approval tests pass. actionlint 1.7.12 and git diff whitespace checks pass.
+- Remaining access evidence after Founder requested testing: `cre8veheart-ai` still has read-only access, no pending invitation for that account, collaborators-only account restriction still enabled. GitHub personal OAuth reauthorization is unavailable (`canReconnect: false`); current scopes include `read:user`, not full `user` needed for block management. No available connection can remove the other account's block. Existing expired invitation for `claude` was left untouched.
+- Known inherited dependency risk: recovery lockfile install reports six vulnerabilities including one critical; PR #2 separately verifies an updated zero-known-vulnerability tree. This workflow-only PR does not claim to resolve dependency or production-readiness risks.
+- Founder-requested exact spelling probes: `GET /users/cre8veheart-ai` succeeds; `GET /users/cre8veheart-ai.` returns 404. Permission lookup without dot returns read; lookup with dot returns 404 `cre8veheart-ai. is not a user`. Workflow condition tests also deny the dot-suffixed name. The dot is not a fix for the separate HTTP422 account-block failure.
 
 This trail is append-only. The Current Working Checkpoint may be rewritten to show the latest resume state, but completed history entries must not be silently edited or deleted. Corrections are added as new entries referencing the corrected entry.
 

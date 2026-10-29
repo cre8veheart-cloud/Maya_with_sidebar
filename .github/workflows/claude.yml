@@ -20,7 +20,7 @@ jobs:
   claude:
     if: |
       github.event_name != 'workflow_dispatch' &&
-      github.actor == 'cre8veheart-ai' &&
+      (github.actor == 'cre8veheart-ai' || github.actor == 'cre8veheart-cloud') &&
       (
         (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude')) ||
         (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude')) ||
