@@ -1,0 +1,45 @@
+{
+  "name": "maya-with-sidebar",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "test": "node --test tests/*.test.mjs",
+    "test:ceo": "node scripts/verify-ceo-landmark.mjs && node scripts/verify-ceo-chassis.mjs && node scripts/verify-ceo-adversarial-evals.mjs",
+    "test:cto": "node scripts/verify-cto-chassis.mjs",
+    "test:cmo": "node scripts/verify-cmo-chassis.mjs",
+    "test:cfo": "node scripts/verify-cfo-chassis.mjs",
+    "test:adjudication": "node scripts/verify-ceo-cto-adjudication.mjs && node scripts/verify-ceo-cto-fixtures.mjs",
+    "test:blackbox": "node scripts/verify-model-blackbox.mjs",
+    "test:security": "node scripts/verify-security-gauntlet.mjs",
+    "test:beta": "node scripts/verify-beta-hardening.mjs",
+    "test:credentials": "node scripts/audit-credential-leaks.mjs",
+    "verify": "npm run lint && npm run test:credentials && npm test && npm run test:ceo && npm run test:cto && npm run test:cmo && npm run test:cfo && npm run test:adjudication && npm run test:blackbox && npm run test:security && npm run test:beta && npm run test:session-closeout && npm run test:persistence && npm run build",
+    "test:persistence": "node scripts/verify-persistence-foundation.mjs",
+    "test:session-closeout": "node scripts/verify-session-closeouts.mjs"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.115.0",
+    "@vercel/kv": "^3.0.0",
+    "next": "^16.3.3",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8"
+  },
+  "engines": {
+    "node": ">=20.9.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.4",
+    "autoprefixer": "^10.4.19",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "^16.3.1",
+    "postcss": "^8.4.39",
+    "tailwindcss": "^3.4.6",
+    "typescript": "^5"
+  }
+}

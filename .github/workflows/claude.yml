@@ -1,0 +1,127 @@
+name: Claude Code
+
+on:
+  workflow_dispatch:
+    inputs:
+      smoke_prompt:
+        description: Read-only prompt used to verify Claude model/API execution
+        required: false
+        default: Read README.md and respond exactly MAYA_CLAUDE_SMOKE_OK. Do not edit, commit, push, create a branch, or open a pull request.
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+  issues:
+    types: [opened, assigned]
+  pull_request_review:
+    types: [submitted]
+
+jobs:
+  claude:
+    if: |
+      github.event_name != 'workflow_dispatch' &&
+      github.actor == 'cre8veheart-ai' &&
+      (
+        (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude')) ||
+        (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude')) ||
+        (github.event_name == 'pull_request_review' && contains(github.event.review.body, '@claude')) ||
+        (github.event_name == 'issues' && (contains(github.event.issue.body, '@claude') || contains(github.event.issue.title, '@claude')))
+      )
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+      actions: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+
+      - name: Run Claude Code
+        id: claude
+        uses: anthropics/claude-code-action@9c5ddab2e6d17b83ea679153b31f1d5f023cf636 # v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+  claude-smoke:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+
+      - name: Verify ANTHROPIC_API_KEY is configured
+        shell: bash
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          if [ -z "$ANTHROPIC_API_KEY" ]; then
+            echo "::error::ANTHROPIC_API_KEY is missing or empty."
+            exit 1
+          fi
+          echo "ANTHROPIC_API_KEY is configured (value not printed)."
+
+      - name: Run read-only Claude model/API smoke test
+        id: claude_smoke
+        continue-on-error: true
+        uses: anthropics/claude-code-action@9c5ddab2e6d17b83ea679153b31f1d5f023cf636 # v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          prompt: ${{ inputs.smoke_prompt }}
+          claude_args: |
+            --max-turns 3
+            --allowedTools Read
+
+      - name: Debug Claude smoke test failure
+        if: always()
+        shell: bash
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          echo "## Claude Smoke Test Diagnostics"
+          echo "Outcome: ${{ steps.claude_smoke.outcome }}"
+          echo
+          
+          # Extract and display the actual error from Claude's execution log
+          if [ -f "/home/runner/work/_temp/claude-execution-output.json" ]; then
+            echo "### Claude Execution Output:"
+            echo '```json'
+            cat /home/runner/work/_temp/claude-execution-output.json | jq . 2>/dev/null || cat /home/runner/work/_temp/claude-execution-output.json
+            echo '```'
+          else
+            echo "⚠️ Claude execution log not found"
+          fi
+          
+          # Verify prerequisites
+          echo
+          echo "### Prerequisites Check:"
+          [ -f "README.md" ] && echo "✓ README.md exists" || echo "✗ README.md missing"
+          [ -n "$ANTHROPIC_API_KEY" ] && echo "✓ ANTHROPIC_API_KEY configured" || echo "✗ ANTHROPIC_API_KEY missing"
+
+      - name: Record smoke-test result
+        if: always()
+        shell: bash
+        env:
+          SMOKE_OUTCOME: ${{ steps.claude_smoke.outcome }}
+        run: |
+          {
+            echo "## Claude model/API smoke test"
+            echo
+            echo "- Action outcome: $SMOKE_OUTCOME"
+            echo "- Branch cleanup: intentionally disabled"
+            echo "- Diagnostic logs: retained in this workflow run"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          if [ "$SMOKE_OUTCOME" != "success" ]; then
+            echo "::error::Claude model/API smoke test failed. Inspect the preceding action log for the preserved provider error."
+            exit 1
+          fi
