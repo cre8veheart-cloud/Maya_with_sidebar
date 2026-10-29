@@ -76,6 +76,10 @@ web_modules/
 
 # Next.js build output
 .next
+.open-next/
+.wrangler/
+.dev.vars
+.dev.vars.*
 out
 
 # Nuxt.js build / generate output
