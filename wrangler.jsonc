@@ -2,6 +2,10 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "maya-with-sidebar",
   "main": ".open-next/worker.js",
+  "build": {
+    "command": "node scripts/build-cloudflare-worker.mjs",
+    "watch_dir": ["app", "components", "lib", "public", "scripts"]
+  },
   "compatibility_date": "2026-10-29",
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
   "assets": {

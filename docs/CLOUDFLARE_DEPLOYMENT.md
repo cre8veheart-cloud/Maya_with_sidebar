@@ -29,6 +29,9 @@ npm run preview:cloudflare -- --port 8787
 
 `verify:cloudflare` creates the Next.js/OpenNext output and runs a local Wrangler
 deployment dry-run. It does not publish, create a resource, or change DNS.
+It deliberately starts with `wrangler deploy --dry-run`, the no-upload equivalent
+of the dashboard command, rather than assuming an earlier build created output.
+Wrangler's repository-defined build hook generates the missing Worker first.
 `preview:cloudflare` serves that output locally in Cloudflare's Workers runtime.
 The standard `npm run build` remains the Vercel-compatible Next.js build.
 
@@ -40,12 +43,23 @@ Only after the recovery and deployment changes are reviewed and approved:
   a different canonical destination after verifying ownership.
 - Production branch: `main`; never use the recovery/fix branch for production.
 - Root directory: `/`.
-- Build command: `npm run build:cloudflare`.
-- Deploy command: `npm run deploy:cloudflare`.
+- Build command: leave empty; the repository's Wrangler build hook runs
+  `npm run build:cloudflare`.
+- Deploy command: `npx wrangler deploy` (the existing dashboard command).
 - Build environment: Node.js 22 or later.
 - Worker name: confirm the existing project is `maya-with-sidebar`. If different,
   update both `name` and `services[0].service` in `wrangler.jsonc` together before
   deployment. Do not accidentally create a second Worker.
+
+The exact fresh-checkout dashboard path was reproduced locally: before the
+Wrangler hook, `npx wrangler deploy --dry-run` failed because
+`.open-next/worker.js` did not exist. A custom build hook fixes that demonstrated
+path without requiring a dashboard edit. It is not proof that this is the only
+remote failure; Cloudflare's final error remains unavailable through the saved
+connector. The hook skips a second build when OpenNext itself delegates an
+already prepared deployment to Wrangler, preserving its matching build/cache ID.
+When using `npm run deploy:cloudflare` directly, run
+`npm run build:cloudflare` first as required by the OpenNext CLI.
 
 The GitHub Actions workflow in `.github/workflows/main.yml` runs locked install,
 the full application verification suite, Cloudflare packaging/dry-run, and a
@@ -81,9 +95,11 @@ not migrated, replaced or bypassed here.
 
 ## Production approval and rollback
 
-Follow `AGENTS.md` for exact-head Founder approval. The archived instructions
-refer to approval workflows not present in the accessible recovery copy; do not
-claim that branch protections or those checks are currently enforced.
+Follow `AGENTS.md` for exact-head Founder approval. The recovery branch includes
+the approval workflow/helper; the current `main` does not include that source.
+The helper names `cre8veheart-ai` and requires OWNER association, while the
+accessible repository belongs to `cre8veheart-cloud`. Do not claim that this
+identity mismatch, branch protections, or approval enforcement is restored.
 No agent may merge or deploy this change based on a passing local build alone.
 
 Rollback before deployment: close the unmerged fix PR. After an explicitly

@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
+import { shouldBuildWorker } from "../scripts/build-cloudflare-worker.mjs";
 
 const read = (path) => readFileSync(new URL(`../${path}`, import.meta.url), "utf8");
 const config = JSON.parse(read("wrangler.jsonc"));
@@ -22,11 +23,34 @@ test("Cloudflare packaging leaves the standard Next.js build intact", () => {
   assert.equal(scripts.build, "next build");
   assert.equal(scripts["build:cloudflare"], "opennextjs-cloudflare build");
   assert.equal(scripts["deploy:cloudflare"], "opennextjs-cloudflare deploy");
+  assert.equal(config.build.command, "node scripts/build-cloudflare-worker.mjs");
+  assert.deepEqual(config.build.watch_dir, ["app", "components", "lib", "public", "scripts"]);
+  assert.equal(
+    scripts["verify:cloudflare"],
+    "wrangler deploy --dry-run --outdir .open-next/dry-run",
+  );
   assert.match(scripts["verify:cloudflare"], /wrangler deploy --dry-run/);
   assert.ok(dependencies.next);
   assert.ok(devDependencies["@opennextjs/cloudflare"]);
   assert.ok(devDependencies.wrangler);
   assert.doesNotMatch(read("next.config.mjs"), /output\s*:\s*["']export["']/);
+});
+
+test("the dashboard deploy command builds missing output without redoing OpenNext deployment", () => {
+  assert.equal(shouldBuildWorker({ workerExists: false }), true);
+  assert.equal(shouldBuildWorker({ workerExists: true }), true);
+  assert.equal(
+    shouldBuildWorker({ openNextDeploy: "true", workerExists: true }),
+    false,
+  );
+  assert.equal(
+    shouldBuildWorker({ openNextDeploy: "true", workerExists: false }),
+    true,
+  );
+  assert.equal(
+    shouldBuildWorker({ openNextDeploy: "false", workerExists: true }),
+    true,
+  );
 });
 
 test("Cloudflare build artifacts and local credentials stay out of Git and checks", () => {
