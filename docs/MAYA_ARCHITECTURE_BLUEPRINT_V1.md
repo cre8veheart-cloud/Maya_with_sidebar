@@ -102,18 +102,19 @@ Initial candidate categories (providers intentionally undecided):
 
 ## Current Working Checkpoint
 
-Last updated: 2026-09-21 UTC
-Update authority: Founder-approved working state
+Last updated: 2026-10-29 UTC
+Update authority: Founder-requested recovery/deployment engineering; no production approval
 Resume phrase: **DIH EVENT MAYA**
 
-### Active engineering-control checkpoint
+### Active recovery/deployment checkpoint
 
-- PR #135 (approval-gate false-failure fix) is VERIFIED merged to `main` (commit `95fb9c5`); the `issue_comment`-from-bots false-failure is resolved in production.
-- PR #134 (founder-continuity removal + chat provider error hardening) is VERIFIED merged to `main` (commit `29eaf68`) and VERIFIED live in production on both the canonical `maya-with-sidebar` and legacy `maya-claude-mcp` Vercel projects.
-- `main` also carries PR #139 (Adobe connector authorization links) and PR #141 (Copilot repo-scan pass), both merged after #134/#135.
-- Audit finding, this session: `AGENTS.md`'s "Founder-authorized production rule" still carried PR #123's looser language ("no exact-comment syntax required"), which is stale relative to the `founder-exact-head-approval` GitHub Actions gate actually installed by PR #133 and still enforcing on every PR. A full revert of PR #123 was evaluated and rejected — most of what #123 removed turned out to be genuine bug fixes (GitHub repo-allowlist fail-open bug, session killed on non-401 errors) or security improvements (credential-leak audit) or duplicate infrastructure (`services/claude-mcp`, duplicate Vercel Action workflows) that should stay removed.
-- Change made in this branch: rewrote the `AGENTS.md` rule to name the live `founder-exact-head-approval.yml` / `APPROVE <head_sha>` mechanism explicitly, instead of the superseded looser text. No code, workflow, or runtime behavior changed — documentation-only correction.
-- Exact first next action: PR #142 is open with `npm run verify` VERIFIED passing on head `fa6a6aec27e440ec523c2a22078a58eede4a154b`; wait for Leslie's `APPROVE fa6a6aec27e440ec523c2a22078a58eede4a154b` comment to clear the `founder-exact-head-approval` check, then merge.
+- VERIFIED: recovery PR #1 in `cre8veheart-cloud/Maya_with_sidebar` is draft/open at `87ef34382f7934a6ca05c59968e7cfd4a7e55695`; main still contains only a README and empty workflow. Historical September PR/deployment claims in this archive are UNVERIFIED for the accessible recovery repository.
+- VERIFIED: branch `fix/cloudflare-workers-build` adds OpenNext/Workers packaging without changing application routes, Vercel configuration, provider selection, authentication, storage, or DNS.
+- VERIFIED locally: clean `npm ci`; complete `npm run verify` including 14 unit tests; OpenNext build and Wrangler deployment dry-run; `npm audit` reports zero known vulnerabilities. Node 22.23.4, Next 16.4.3, OpenNext Cloudflare 1.20.14, Wrangler 4.156.0.
+- VERIFIED locally: Workers runtime renders Home, CEO and Settings; browser Home → CEO → Home navigation succeeds and JS/CSS assets load. Health is correctly degraded (503, Anthropic absent); protected profile/session APIs return 401 without a session. Browser tester API fetches were inconclusive (`TypeError: Failed to fetch`); independent HTTPS probes verified those statuses. Missing favicon is an existing non-blocking 404.
+- VERIFIED: GitHub Actions is enabled. Founder requested workflow setup/activation; the new read-only `.github/workflows/main.yml` runs install, full verification, Workers packaging dry-run, and dependency audit. Workflow syntax passes actionlint and local safety assertions. Remote execution status must be checked after publication.
+- UNKNOWN: latest Vercel source parity, Cloudflare account/Worker identity and remote build error, remote runtime secrets, authenticated flows, live AI and durable services. Connector credential checks returned invalid Vercel token and malformed Cloudflare Authorization header. No secrets copied, providers called, merge performed, or remote deployment triggered.
+- Exact first next action: review the stacked deployment-fix PR against recovery PR #1, observe GitHub CI, restore existing Cloudflare connector access, verify the intended Worker name, and obtain exact-head Founder approval before any production change. An agent must not merge either PR.
 
 
 ### Resume protocol
@@ -136,6 +137,30 @@ When **DIH EVENT MAYA** is invoked:
 - A work session is not considered closed until the checkpoint states the verified stop point and first next action.
 
 ## Work History Trail
+
+### 2026-10-29 — Cloudflare recovery engineering started
+
+- Task: Founder requested engineering help after a Cloudflare deployment failure.
+- Governing sections: Blueprint governance, Preapproved Tool Register (reversible open-source packages and local verification), Amendment protocol, and Work History Trail. Preserve AGENTS.md server-only secrets, protected API boundaries, and Founder-controlled production.
+- VERIFIED: accessible `cre8veheart-cloud/Maya_with_sidebar` main contains only README and an empty workflow. The blueprint is absent from that main; this recovery branch carries the historical source and blueprint. No claim that the recovery archive equals the latest Vercel deployment.
+- VERIFIED: recovery PR #1 is draft/open at `87ef34382f7934a6ca05c59968e7cfd4a7e55695`. Screenshot shows failed Cloudflare build `0d99408`, main commit `12f73b4`, no build command, deploy command `npx wrangler deploy`. Final Cloudflare error and account configuration remain UNKNOWN because the saved connector credential is rejected.
+- Planned reversible tooling: OpenNext Cloudflare adapter and Wrangler for Next.js Workers packaging; update Next.js within major 16 to the adapter-supported patched release. Local build/dry-run only; no new accounts, credentials, paid resources, production/client data, DNS changes, merge or deployment. Preserve Vercel support. Resource bindings and production permissions remain Founder-managed.
+- Failure evidence: scratch VM lacked Node; verified official Node 22 archive checksum. Initial xz extraction failed because xz was absent; switched to the checksum-verified gzip distribution. Existing npm install audit reports six vulnerabilities, including critical Next.js advisories; record the final dependency audit separately.
+- Verification gate: `npm ci`, `npm run verify`, OpenNext build, Wrangler dry-run, and local Workers browser/API smoke checks. Real AI, storage, OAuth and remote deployment require existing service credentials and remain unverified without them.
+- Rollback: close the unmerged deployment-fix PR or revert its scoped commits. Keep PR #1 byte-for-byte archive recovery unchanged.
+
+### 2026-10-29 — Cloudflare packaging verified and CI workflow prepared
+
+- Governing sections preserved: Blueprint governance, Preapproved Tool Register, Amendment protocol, server-only credentials and Founder production control. This records recovery preparation, not a new authoritative production blueprint on main.
+- Change: added OpenNext 1.20.14 / Wrangler 4.156.0, Worker/assets/self-reference configuration, local preview and dry-run scripts, artifact/credential ignores, regression tests, and deployment notes. Existing Next/Vercel build and all application routes remain unchanged. Next/eslint-config-next updated within major 16 to 16.4.3 for adapter compatibility and known security fixes; Node minimum raised to 22 for Wrangler.
+- Failure/fix: initial adapter install introduced a vulnerable glob pin through `@node-minify/core`. Scoped same-major glob override plus non-breaking dependency audit fixes resolved it; final locked install audit is VERIFIED zero known vulnerabilities. Deprecated Vercel KV, node-domexception and glob packages remain warnings, not proof of complete application security.
+- VERIFIED final dependency tree: `npm ci`, `npm run verify` (14 tests, role/boundary verification scripts and production build), `npm run verify:cloudflare` and `npm audit` all exit 0. Dry-run bundle 6215.85 KiB raw / 1251.77 KiB gzip, 33 asset files; no remote publish.
+- VERIFIED local runtime: endpoint `maya-cloudflare`, port 8787; public sandbox HTTPS requests to Home, CEO and Settings return 200. Health returns expected degraded 503 without Anthropic; protected session/profile endpoints reject absent session with 401. Malformed chat request returns structured 400. Live provider/authenticated/storage behavior remains UNVERIFIED.
+- Browser evidence: Home → Max CEO → Home succeeds; no page-side uncaught error/unhandled rejection or failed JS/CSS asset recorded. API fetch probes in the tester were inconclusive and were verified separately over HTTPS. Existing favicon 404 and sparse baseline workspace UI were not changed.
+- Founder follow-up: requested workflow setup and activation. GitHub Actions is VERIFIED enabled; existing historical workflow registrations do not prove current YAML exists on main. Replaced the one-byte empty `main.yml` with read-only validation on PRs to main/recovery, main pushes, and manual dispatch. Official checkout/setup-node actions are pinned to verified v6 commit SHAs; credentials are not persisted. No deployment credentials or publishing commands added to CI.
+- Workflow checks: actionlint 1.7.12 and YAML safety assertions pass. Local equivalents of every CI command pass. Remote workflow status remains pending publication; do not label it passed until a run concludes.
+- Blueprint gap: accessible main has no blueprint or approval-check source, although GitHub retains active historical workflow registrations. No claim that historical branch protection/approval enforcement is restored. Exact-head Founder approval remains required; never auto-merge or deploy.
+- Stop point: verified local packaging and browser/API smoke checks; publish a separate stacked PR from `fix/cloudflare-workers-build` to `recovery/restore-drive-archive-20261029`. Preserve source-recovery PR #1 unchanged. First next action: inspect the remote CI run, then resolve account access/target identity before requesting production approval.
 
 This trail is append-only. The Current Working Checkpoint may be rewritten to show the latest resume state, but completed history entries must not be silently edited or deleted. Corrections are added as new entries referencing the corrected entry.
 
