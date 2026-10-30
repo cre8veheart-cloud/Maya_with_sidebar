@@ -36,6 +36,15 @@ test("Cloudflare packaging leaves the standard Next.js build intact", () => {
   assert.doesNotMatch(read("next.config.mjs"), /output\s*:\s*["']export["']/);
 });
 
+test("both verification workflows use the application's supported Node runtime", () => {
+  const { engines } = JSON.parse(read("package.json"));
+  assert.equal(engines.node, ">=22.0.0");
+  for (const path of [".github/workflows/main.yml", ".github/workflows/full-verification.yml"]) {
+    assert.match(read(path), /node-version:\s*["']22["']/);
+    assert.doesNotMatch(read(path), /node-version:\s*["']20["']/);
+  }
+});
+
 test("the dashboard deploy command builds missing output without redoing OpenNext deployment", () => {
   assert.equal(shouldBuildWorker({ workerExists: false }), true);
   assert.equal(shouldBuildWorker({ workerExists: true }), true);

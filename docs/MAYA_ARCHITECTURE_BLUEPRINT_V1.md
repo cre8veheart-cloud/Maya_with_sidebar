@@ -113,7 +113,8 @@ Resume phrase: **DIH EVENT MAYA**
 - VERIFIED recovery identity: the original source ZIP's Git archive comment is `93d2820193738b39173e6d8948974ef8f4abb43c`; SHA256 `a9e1fbeb53aaec0aef5c76dd153d620cf51bef82554c13f29d73adcbaebc71d6`, with September 23 entry timestamps. Archived original repository ID `1297973311` differs from accessible recovery ID `1424200826`; this is a separate recovery repository, not simply the original renamed.
 - VERIFIED prepublication checks: clean `npm ci`, complete `npm run verify` with 32 passing unit tests (ten new diagnostic tests), lint, credential audit, role/security/persistence checks and the Next.js production build all pass. A real HTTPS probe through the diagnostic reports the existing preview degraded and Anthropic configuration missing. Existing Cloudflare packaging verification is reused because no app, dependency, adapter or deployment configuration changed.
 - UNKNOWN: latest Vercel source parity, original repository's current location/state, successful Anthropic calls/billing, live persistence and Cloudflare deployment.
-- First next action: publish the verified maintenance addition to existing open PR #3 and observe its exact-head remote checks; preserve its parent PR #2. Do not merge, change ownership, reset working credentials or retire Vercel. Access to original repository by permanent ID returned 404 through both connected GitHub credentials; Vercel and Cloudflare connector authentication remain blocked.
+- VERIFIED remote follow-up at maintenance head `47ce6fc7e54b517d1035494a89744063e335c197`: Node 22 application/Cloudflare packaging job passed, but legacy full-verification job failed two diagnostic tests under Node 20. Root cause: the older workflow runtime contradicted `package.json`'s Node >=22 requirement. This follow-up aligns only that runtime to Node 22 and adds a regression assertion covering both verification workflows; no tests or gates are removed.
+- First next action: verify and publish the Node-runtime alignment to existing open PR #3, then observe its exact-head remote checks; preserve parent PR #2. Do not merge, change ownership, reset working credentials or retire Vercel. Access to original repository by permanent ID returned 404 through both connected GitHub credentials; Vercel and Cloudflare connector authentication remain blocked.
 
 ### Current account/workflow access checkpoint
 
@@ -161,6 +162,12 @@ When **DIH EVENT MAYA** is invoked:
 - A work session is not considered closed until the checkpoint states the verified stop point and first next action.
 
 ## Work History Trail
+
+### 2026-10-30 — Fix legacy verification runtime mismatch
+
+- Evidence: maintenance head `47ce6fc7e54b517d1035494a89744063e335c197` passed GitHub's Node 22 application/Cloudflare packaging run `40997565601`; full-verification run `40997565572` failed two diagnostic success assertions under Node 20. Node 20 is below the application's already-declared Node >=22 requirement. Local verification used Node 22 and passed; it did not reveal the second workflow's stale runtime.
+- Fix: set `.github/workflows/full-verification.yml` to Node 22 and add a test requiring both verification workflows to match the declared runtime. Existing action versions, token permissions, job contents, release approvals and app runtime behavior are unchanged.
+- VERIFIED local follow-up: complete `npm run verify` passes with 33 unit tests, lint, credential audit, role/security/persistence checks and production build. Actionlint passes the three relevant verification/approval workflows; diff whitespace check passes. The preceding clean install remains valid because dependencies/lockfile did not change. Remote exact-head verification remains pending publication. Separate Cloudflare provider build remains failed; no provider logs or live deployment success are available through the rejected connector credential.
 
 ### 2026-10-30 — Read-only maintenance command and source fingerprint
 
