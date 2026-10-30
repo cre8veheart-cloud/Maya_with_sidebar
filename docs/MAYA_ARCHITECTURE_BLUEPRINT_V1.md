@@ -106,6 +106,15 @@ Last updated: 2026-10-29 UTC
 Update authority: Founder-approved recovery, workflow/access repairs and PR audit; no automatic production approval
 Resume phrase: **DIH EVENT MAYA**
 
+### Current maintenance simplification checkpoint
+
+- Governing sections: Preapproved Tool Register, Maya Core — Locked Frame, Blueprint governance and Work History Trail. Founder requested simpler workflows and authorized reversible engineering; no production or access-control bypass.
+- VERIFIED: `npm run doctor` is a read-only process-configuration check; optional `--url` checks only the existing app's `/api/health`. No automatic sign-in, credential changes, model requests, account resets, uploads or deployments. Reports local and remote configuration separately and never treats key presence as successful API validation.
+- VERIFIED recovery identity: the original source ZIP's Git archive comment is `93d2820193738b39173e6d8948974ef8f4abb43c`; SHA256 `a9e1fbeb53aaec0aef5c76dd153d620cf51bef82554c13f29d73adcbaebc71d6`, with September 23 entry timestamps. Archived original repository ID `1297973311` differs from accessible recovery ID `1424200826`; this is a separate recovery repository, not simply the original renamed.
+- VERIFIED prepublication checks: clean `npm ci`, complete `npm run verify` with 32 passing unit tests (ten new diagnostic tests), lint, credential audit, role/security/persistence checks and the Next.js production build all pass. A real HTTPS probe through the diagnostic reports the existing preview degraded and Anthropic configuration missing. Existing Cloudflare packaging verification is reused because no app, dependency, adapter or deployment configuration changed.
+- UNKNOWN: latest Vercel source parity, original repository's current location/state, successful Anthropic calls/billing, live persistence and Cloudflare deployment.
+- First next action: publish the verified maintenance addition to existing open PR #3 and observe its exact-head remote checks; preserve its parent PR #2. Do not merge, change ownership, reset working credentials or retire Vercel. Access to original repository by permanent ID returned 404 through both connected GitHub credentials; Vercel and Cloudflare connector authentication remain blocked.
+
 ### Current account/workflow access checkpoint
 
 - Governing sections: Blueprint governance, Preapproved Tool Register, Amendment protocol and Work History Trail. Founder approved inviting `cre8veheart-ai` with write access and allowing that account plus current owner `cre8veheart-cloud` to request Claude work; no broad bot access or production-gate bypass.
@@ -152,6 +161,16 @@ When **DIH EVENT MAYA** is invoked:
 - A work session is not considered closed until the checkpoint states the verified stop point and first next action.
 
 ## Work History Trail
+
+### 2026-10-30 — Read-only maintenance command and source fingerprint
+
+- Task: Founder requested simpler workflows after repeated sign-ins, menu navigation and conflicting account/configuration instructions.
+- Evidence: source ZIP read from `cre8veheart-cloud/pocket-gallery/Maya_with_sidebar-main.zip`; archive comment and SHA256 inspected locally. Archived security export identifies original repository ID `1297973311`; live recovery repository metadata returns ID `1424200826`. Exact-commit search returned no accessible matches; authenticated repository inventory contains only the recovery repository and evidence archive. Drive archive search found no newer candidate. These negative searches do not establish deletion.
+- Changes: add `npm run doctor`, ten focused tests, and `docs/MAYA_MAINTENANCE.md`. The command diagnoses current-process configuration or the existing health endpoint without reading secret files, exposing values, calling models, changing access or adding a gate.
+- VERIFIED: ten diagnostic tests, lint and whitespace checks passed before final checkpoint update. Against the existing preview, the command returned exit 1 and accurately reported degraded health/missing Anthropic configuration. Secret-leak, misleading-success, URL credential/query, redirect and offline-default cases are covered.
+- Attempted alternatives: inspected archived PR #103/#106 patches with forward/reverse `git apply --check`; neither applies cleanly to this later recovery tree. No historical patch was applied or reversed. Do not force broad reversions that could remove later beneficial changes.
+- VERIFIED final local result: clean `npm ci` and complete `npm run verify` passed, including all 32 unit tests, lint, credential audit, role/security/persistence checks and the Next.js production build. Existing Cloudflare packaging evidence is reused because app/dependency/deployment inputs did not change. Remote publication and exact-head CI remain pending at this checkpoint; no production functionality is inferred from these results.
+- Branch/PR: `fix/claude-owner-access`, existing PR #3 stacked on `fix/cloudflare-workers-build` PR #2. Main, production, credentials, release approval requirements, existing data and repository ownership are unchanged.
 
 ### 2026-10-29 — Audit PRs and resolve integration conflict
 
