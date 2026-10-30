@@ -75,6 +75,13 @@ Ari should preserve durable Maya working context across sessions to the extent s
 
 ## Current Recovery Target
 
+Recovery update (2026-10-30): read the **Latest recovery checkpoint** at the top
+of `docs/DIH_WORKSPACE_CHECKPOINT.md` and its linked Notion session log first.
+The coordinates and completed-build statements below are the preserved historical
+snapshot, not verification of today's repository, production, or storage state.
+Do not silently resume that older build package. Verify current remote state and
+follow Leslie's current direction.
+
 Workspace: **ChatGPT Codex coding workspace**
 
 Canonical repository: **`cre8veheart-ai/Maya_with_sidebar`** (private)

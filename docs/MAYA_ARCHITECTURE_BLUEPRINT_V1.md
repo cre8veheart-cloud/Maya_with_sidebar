@@ -159,6 +159,15 @@ Resume phrase: **DIH EVENT MAYA**
 
 When **DIH EVENT MAYA** is invoked:
 
+Recovery checkpoint update (2026-10-30): first read the **Latest recovery
+checkpoint** in `docs/DIH_WORKSPACE_CHECKPOINT.md` and its linked Notion session
+log. That closeout records the current recovery PR, the newer PR #209 source
+lead, reproduced access failures and the migration blocker. Earlier checkpoint
+snapshots are history, not proof of current production state. This session
+closeout changes documentation only; no authentication, application or deployment
+behavior was changed. Verify the live source reference before continuing.
+
+
 1. Read this living blueprint from `main`.
 2. Present this Current Working Checkpoint before proposing or taking substantive action.
 3. Verify the referenced PR, branch, deployment and blocker against live platform state.
