@@ -4,9 +4,6 @@ on:
   pull_request:
     branches:
       - main
-      - recovery/restore-drive-archive-20261029
-      - fix/cloudflare-workers-build
-      - fix/claude-owner-access
   push:
     branches:
       - main
