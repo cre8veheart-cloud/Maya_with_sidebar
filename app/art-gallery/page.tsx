@@ -1,12 +1,6 @@
-import AgentWorkspace from "@/components/AgentWorkspace";
+import GalleryWorkspace from "@/components/GalleryWorkspace";
+import { Suspense } from "react";
 
 export default function ArtGalleryPage() {
-  return (
-    <AgentWorkspace
-      name="Mimi"
-      title="Art Gallery Sales Manager"
-      mission="Manage collector inquiries, artwork availability, sales follow-up, exhibitions, and gallery relationships while leaving artistic decisions with the artist."
-      placeholder="Ask Mimi about collectors, availability, follow-up, exhibitions, or gallery sales..."
-    />
-  );
+  return <Suspense fallback={<p className="p-6 text-stone-200">Loading gallery workspace…</p>}><GalleryWorkspace /></Suspense>;
 }

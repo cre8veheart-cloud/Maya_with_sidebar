@@ -5,7 +5,7 @@ import { useState } from "react";
 import { usePathname } from "next/navigation";
 import SidebarToggle from "./SidebarToggle";
 
-type NavItem = { label: string; href: string; icon: string; disabled?: boolean; phase?: string };
+type NavItem = { label: string; href: string; icon: string; disabled?: boolean; phase?: string; children?: { label: string; href: string }[] };
 type NavGroup = { id: string; label: string; icon: string; items: NavItem[] };
 
 const navGroups: NavGroup[] = [
@@ -15,6 +15,12 @@ const navGroups: NavGroup[] = [
     icon: "✦",
     items: [
       { label: "Home", href: "/", icon: "🏠" },
+      { label: "Gallery & Website", href: "/art-gallery", icon: "🖼️", children: [
+        { label: "Collection", href: "/art-gallery?view=collection" },
+        { label: "Website settings", href: "/art-gallery?view=website" },
+        { label: "Website preview", href: "/art-gallery?view=preview" },
+        { label: "Mimi · Gallery assistant", href: "/art-gallery?view=assistant" },
+      ] },
       { label: "Community", href: "/community", icon: "💬" },
       { label: "Tasks", href: "/tasks", icon: "📋" },
       { label: "Search", href: "/search", icon: "🔍" },
@@ -45,7 +51,6 @@ const navGroups: NavGroup[] = [
     label: "Specialist Staff",
     icon: "✦",
     items: [
-      { label: "Mimi · Gallery Sales", href: "/art-gallery", icon: "🖼️" },
       { label: "Custom Agent", href: "/custom-agent", icon: "➕" },
     ],
   },
@@ -91,6 +96,10 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
 
+  const closeMobileSidebar = () => {
+    if (isOpen && window.innerWidth < 768) onToggle();
+  };
+
   return (
     <>
       {isOpen && (
@@ -114,7 +123,7 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
               const isGroupCollapsed = !!collapsed[group.id];
               return (
                 <div key={group.id} className="mb-2">
-                  <button onClick={() => toggleGroup(group.id)} className="flex items-center justify-between w-full px-3 py-1.5 rounded-md text-[#585b70] hover:text-[#a6adc8] transition-colors">
+                  <button onClick={() => toggleGroup(group.id)} aria-expanded={!isGroupCollapsed} className="flex items-center justify-between w-full px-3 py-1.5 rounded-md text-[#585b70] hover:text-[#a6adc8] transition-colors">
                     <span className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider"><span>{group.icon}</span><span>{group.label}</span></span>
                     <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={`transition-transform duration-200 ${isGroupCollapsed ? "-rotate-90" : ""}`}><polyline points="6 9 12 15 18 9" /></svg>
                   </button>
@@ -127,9 +136,14 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
                             {item.phase && <span className="text-[9px] font-semibold uppercase tracking-wider text-[#585b70] border border-[#45475a] px-1.5 py-0.5 rounded">{item.phase}</span>}
                           </div>
                         ) : (
-                          <Link key={item.href} href={item.href} className={["flex items-center gap-3 rounded-lg px-3 py-2", "transition-colors duration-150 whitespace-nowrap text-sm font-medium", isActive(item.href) ? "bg-[#313244] text-[#89b4fa]" : "text-[#cdd6f4] hover:bg-[#313244] hover:text-[#89b4fa]"].join(" ")}>
-                            <span className="text-base">{item.icon}</span><span>{item.label}</span>
-                          </Link>
+                          <div key={item.href}>
+                            <Link href={item.href} onClick={closeMobileSidebar} className={["flex items-center gap-3 rounded-lg px-3 py-2", "transition-colors duration-150 whitespace-nowrap text-sm font-medium", isActive(item.href) ? "bg-[#313244] text-[#89b4fa]" : "text-[#cdd6f4] hover:bg-[#313244] hover:text-[#89b4fa]"].join(" ")}>
+                              <span className="text-base">{item.icon}</span><span>{item.label}</span>
+                            </Link>
+                            {item.children && isActive(item.href) && <ul className="ml-5 mt-1 space-y-1 border-l border-[#45475a] pl-3">
+                              {item.children.map((child) => <li key={child.href}><Link href={child.href} onClick={closeMobileSidebar} className="block rounded px-2 py-2 text-xs text-[#a6adc8] hover:bg-[#313244] hover:text-[#89b4fa]">{child.label}</Link></li>)}
+                            </ul>}
+                          </div>
                         )
                       )}
                     </div>

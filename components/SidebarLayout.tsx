@@ -15,10 +15,14 @@ export default function SidebarLayout({
   const [hasLoadedPreference, setHasLoadedPreference] = useState(false);
 
   useEffect(() => {
-    const storedPreference = window.localStorage.getItem(SIDEBAR_STORAGE_KEY);
+    let storedPreference = null;
+    try { storedPreference = window.localStorage.getItem(SIDEBAR_STORAGE_KEY); }
+    catch { /* A blocked preference store must not prevent navigation. */ }
 
     if (storedPreference !== null) {
       setSidebarOpen(storedPreference === "true");
+    } else {
+      setSidebarOpen(window.matchMedia("(min-width: 768px)").matches);
     }
 
     setHasLoadedPreference(true);
@@ -29,7 +33,8 @@ export default function SidebarLayout({
       return;
     }
 
-    window.localStorage.setItem(SIDEBAR_STORAGE_KEY, String(sidebarOpen));
+    try { window.localStorage.setItem(SIDEBAR_STORAGE_KEY, String(sidebarOpen)); }
+    catch { /* Keep the current navigation usable without persistent preferences. */ }
   }, [hasLoadedPreference, sidebarOpen]);
 
   return (
